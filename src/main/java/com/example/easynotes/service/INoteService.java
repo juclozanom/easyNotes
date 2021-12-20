@@ -18,7 +18,7 @@ public interface INoteService {
 
     void deleteNote(Long noteId);
 
-    void addReviser(Long id, Long authorId);
+    void addReviser(Long id, Long authorId, String state);
 
     Set<ThankDTO> getThanks(Long id);
 
@@ -27,4 +27,6 @@ public interface INoteService {
     NoteTypeDTO getNoteType(Long noteId);
 
     List<NoteDTO> getNotesByType(String type);
+
+    void updateRevision(Long idRevisedNote, Long authorId, String state);
 }

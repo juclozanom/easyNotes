@@ -28,9 +28,6 @@ public class Note {
 
     private String content;
 
-    @ManyToMany(mappedBy = "revisedNotes")
-    private Set<User> revisers = new HashSet<>();
-
     @OneToMany(mappedBy = "note")
     Set<Thank> thanks;
 
@@ -43,5 +40,8 @@ public class Note {
     //@Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private LocalDate updatedAt;
+
+    @OneToMany(mappedBy ="note")
+    private Set<NoteRevision> revisedNotes;
 
 }

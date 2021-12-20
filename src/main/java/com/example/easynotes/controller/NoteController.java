@@ -32,7 +32,12 @@ public class NoteController {
 
     @PostMapping("{id}/addReviser/{reviserId}")
     public void createNote(@PathVariable Long id, @PathVariable Long reviserId) {
-        noteService.addReviser(id, reviserId);
+        noteService.addReviser(id, reviserId, "Pendiente");
+    }
+
+    @PutMapping("{id}/updateRevision/{reviserId}/{state}")
+    public void updateNote(@PathVariable Long id, @PathVariable Long reviserId,@PathVariable String state) {
+        noteService.updateRevision(id, reviserId, state);
     }
 
     @GetMapping("/{id}")
