@@ -1,5 +1,6 @@
 package com.example.easynotes.integration;
 
+import com.example.easynotes.dto.NoteDTO;
 import com.example.easynotes.dto.NoteResponseWithCantLikesDTO;
 import com.example.easynotes.model.Note;
 import com.example.easynotes.service.NoteService;
@@ -81,4 +82,34 @@ public class NotesIntegrationTest {
                         content().contentType(MediaType.APPLICATION_JSON)
                 );
     }
+
+    @Test
+    public void testTypeNotesHappy() throws Exception {
+        // Arrange
+        String type = "DeInteres";
+
+        //fecha para payload
+
+        var note1   = new NoteDTO("Que hacemos1?","Si el tiempo no se me pasa más cuando se corta la luz1",null,null);
+        var note2   = new NoteDTO("Que hacemos2?","Si el tiempo no se me pasa más cuando se corta la luz2",null,null);
+        var note5   = new NoteDTO("Que hacemos5?","Si el tiempo no se me pasa más cuando se corta la luz5",null,null);
+
+        List<NoteDTO> notes = List.of(note1, note2, note5);
+
+        String expected = writer.writeValueAsString(notes);
+
+        // Act & Assert
+        mockMvc.perform( get("/api/note/typeNote/" + type) )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().json(expected),
+                        content().contentType(MediaType.APPLICATION_JSON)
+                );
+    }
+
+
+
+
+
 }
