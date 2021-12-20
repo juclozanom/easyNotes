@@ -30,23 +30,28 @@ public class User {
     @OneToMany(mappedBy = "user")
     Set<Thank> thanks;
 
-    @ManyToMany
+/*    @ManyToMany
     @JoinTable(
             name = "note_revision",
             joinColumns = @JoinColumn(name = "revisor_id"),
             inverseJoinColumns = @JoinColumn(name = "revised_note_id")
     )
-    private Set<Note> revisedNotes = new HashSet<>();
+    private Set<Note> revisedNotes = new HashSet<>();*/
 
+    @OneToMany(mappedBy ="user")
+    private Set<NoteRevision> revisedNotes;
+
+    /*
     public void addRevisedNote(Note note) {
         this.revisedNotes.add(note);
-        note.getRevisers().add(this);
-    }
+        note.getUser().add(this);
+    }*/
 
+    /*
     public void removeBook(Note note) {
         this.revisedNotes.remove(note);
         note.getRevisers().remove(this);
-    }
+    }*/
 
 
 

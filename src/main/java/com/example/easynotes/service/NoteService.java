@@ -3,9 +3,11 @@ package com.example.easynotes.service;
 import com.example.easynotes.dto.*;
 import com.example.easynotes.exception.ResourceNotFoundException;
 import com.example.easynotes.model.Note;
+import com.example.easynotes.model.NoteRevision;
 import com.example.easynotes.model.Thank;
 import com.example.easynotes.model.User;
 import com.example.easynotes.repository.NoteRepository;
+import com.example.easynotes.repository.NoteRevisionRepository;
 import com.example.easynotes.repository.UserRepository;
 import com.example.easynotes.utils.ListMapper;
 import org.modelmapper.*;
@@ -21,6 +23,7 @@ public class NoteService implements INoteService {
 
     NoteRepository noteRepository;
     UserRepository userRepository;
+    NoteRevisionRepository noteRevisionRepository;
     ModelMapper modelMapper;
     ListMapper listMapper;
 
@@ -28,10 +31,12 @@ public class NoteService implements INoteService {
     NoteService(NoteRepository noteRepository,
                 UserRepository userRepository,
                 ModelMapper modelMapper,
-                ListMapper listMapper) {
+                ListMapper listMapper,
+                NoteRevisionRepository noteRevisionRepository) {
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
         this.listMapper = listMapper;
+        this.noteRevisionRepository = noteRevisionRepository;
 
         //Converter used to retrieve cant of user's notes
         Converter<Set<Note>, Integer> notesToCantNotesConverter = new AbstractConverter<Set<Note>, Integer>() {
@@ -124,8 +129,8 @@ public class NoteService implements INoteService {
         noteRepository.delete(note);
     }
 
-    @Override
-    public void addReviser(Long id, Long authorId) {
+
+    public void addReviser(Long id, Long authorId, String state) {
 
         User user = userRepository.findById(authorId).
                 orElseThrow(  () -> new ResourceNotFoundException("User", "id", id) );
@@ -133,9 +138,11 @@ public class NoteService implements INoteService {
         Note note = noteRepository.findById(id)
                 .orElseThrow( () -> new ResourceNotFoundException("Note", "id", id) );
 
-        user.addRevisedNote(note);
+        NoteRevision newData = new NoteRevision(note,user,state);
 
-        userRepository.save(user);
+
+
+        noteRevisionRepository.save(newData);
     }
 
     @Override
@@ -195,6 +202,19 @@ public class NoteService implements INoteService {
                 }
         );
         return listMapper.mapList(notes, NoteDTO.class );
+    }
+
+    /**
+     * metodo nuevo para actualizar las revisiones con un nuevo estado
+     * @param id
+     * @param authorId
+     * @param state
+     */
+    @Override
+    public void updateRevision(Long idRevisedNote, Long authorId, String state) {
+        NoteRevision datoActual = noteRevisionRepository.findByPrimaryId(authorId,idRevisedNote);
+        datoActual.setState(state);
+        noteRevisionRepository.save(datoActual);
     }
 }
 
