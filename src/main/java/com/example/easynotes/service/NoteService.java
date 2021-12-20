@@ -159,6 +159,43 @@ public class NoteService implements INoteService {
                 )
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public NoteTypeDTO getNoteType(Long noteId) {
+        NoteTypeDTO response = new NoteTypeDTO();
+        Optional<Note> noteWrapper = noteRepository.findById(noteId);
+        Note note = null;
+        if (noteWrapper.isPresent()) note = noteWrapper.get();
+        if (note == null) throw new ResourceNotFoundException("notes", "id", noteId);
+        response.setId(note.getId());
+        int likesAmount = note.getThanks().size();
+        response.setLikesAmount(likesAmount);
+
+        if (likesAmount >= 5 && likesAmount <= 10) {
+            response.setType("DeInteres");
+        } else if( likesAmount > 10 ) response.setType("Destacada");
+        else response.setType("Normal");
+        return response;
+    }
+
+    @Override
+    public List<NoteDTO> getNotesByType(String type) {
+        Map<String, List<Long>> dic = new HashMap<>();
+        dic.put("DeInteres", Arrays.asList(5L, 10L));
+        dic.put("Destacada", Arrays.asList(11L, Long.MAX_VALUE));
+        dic.put("Normal", Arrays.asList(0L, 4L));
+
+        //List<HashMap<String, Object>> res = noteRepository.getNotesByType(dic.get(type).get(0), dic.get(type).get(1));
+        List<Long> res = noteRepository.getNotesByType(dic.get(type).get(0), dic.get(type).get(1));
+        List<Note> notes = new ArrayList<>();
+        res.stream().forEach((note) ->
+                {
+                    Optional<Note> note1 = this.noteRepository.findById(note);
+                    note1.ifPresent(notes::add);
+                }
+        );
+        return listMapper.mapList(notes, NoteDTO.class );
+    }
 }
 
 

@@ -24,6 +24,10 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             "where YEAR(thank.createdAt) = :year " +
             "group by note.id order by cant_thanks desc")
     List<HashMap<String, Object>> findTopThreeNotesMostThankedByDate(int year);
+
+    @Query("SELECT note.id FROM Thank group by note.id having COUNT(*) > :min AND COUNT(*) < :max")
+    //@Query( "SELECT new map (COUNT(note.id) as cant) FROM Thank group by cant having cant > :min AND cant < :max" )
+    List<Long> getNotesByType(Long min, Long max);
 }
 /*
 note    thank
